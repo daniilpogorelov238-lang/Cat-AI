@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#f9f3e9" />
-    <title>Кото AI — OpenRouter</title>
+    <title>Кото AI — Free OpenRouter</title>
     <style>
         /* ===== СТИЛИ ===== */
         :root {
@@ -24,6 +24,8 @@
             --accent-hover: #cf9b6b;
             --avatar-gradient: radial-gradient(circle at 30% 30%, #ffc8a2, #e8a07a);
             --transition: 0.3s ease;
+            --free-badge: #2ecc71;
+            --paid-badge: #e74c3c;
         }
 
         [data-theme="dark"] {
@@ -225,6 +227,27 @@
             border-color: #e74c3c;
         }
 
+        .model-status {
+            font-size: 10px;
+            padding: 2px 10px;
+            border-radius: 20px;
+            background: var(--bg-chat);
+            border: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+
+        .model-status.free {
+            background: #2ecc71;
+            color: white;
+            border-color: #2ecc71;
+        }
+
+        .model-status.paid {
+            background: #f39c12;
+            color: white;
+            border-color: #f39c12;
+        }
+
         /* ===== ТУЛБАР ===== */
         .toolbar {
             display: flex;
@@ -254,6 +277,16 @@
         .toolbar button.active {
             background: var(--accent);
             color: var(--text-primary);
+        }
+
+        .toolbar button.free-btn {
+            background: #2ecc71;
+            color: white;
+            border-color: #2ecc71;
+        }
+
+        .toolbar button.free-btn:hover {
+            background: #27ae60;
         }
 
         /* ===== НАСТРОЙКИ API ===== */
@@ -349,6 +382,17 @@
             white-space: nowrap;
         }
 
+        .api-settings .free-hint {
+            font-size: 10px;
+            color: #2ecc71;
+            padding: 4px 8px;
+            background: rgba(46, 204, 113, 0.1);
+            border-radius: 6px;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            width: 100%;
+            text-align: center;
+        }
+
         /* ===== ЧАТ ===== */
         .chat-container {
             flex: 1;
@@ -428,6 +472,15 @@
             background: var(--bg-chat);
             padding: 0 6px;
             border-radius: 10px;
+        }
+
+        .msg-bubble .free-tag {
+            font-size: 9px;
+            background: #2ecc71;
+            color: white;
+            padding: 0 6px;
+            border-radius: 10px;
+            margin-right: 4px;
         }
 
         .msg-icon {
@@ -646,7 +699,7 @@
         <div class="title-group">
             <h1>
                 <span class="bot-name" id="botNameDisplay">Кото AI</span>
-                <span class="badge">🌐 OpenRouter</span>
+                <span class="badge">🌐 Free</span>
             </h1>
             <div class="sub">
                 <span class="mode-badge" id="modeBadge">🧠 Умный</span>
@@ -656,6 +709,7 @@
                 </span>
                 <span id="themeToggle">🌓</span>
                 <span class="api-status offline" id="apiStatus">⚡ API: выкл</span>
+                <span class="model-status" id="modelStatus">🆓 Бесплатно</span>
             </div>
         </div>
     </div>
@@ -663,33 +717,45 @@
     <!-- ТУЛБАР -->
     <div class="toolbar">
         <button id="apiBtn">⚙️ API</button>
-        <button id="clearBtn">🗑️</button>
-        <button id="exportBtn">📥</button>
+        <button id="freeModelsBtn" class="free-btn">🆓 Бесплатные модели</button>
+        <button id="clearBtn">🗑️ Очистить</button>
+        <button id="exportBtn">📥 Экспорт</button>
         <button id="commandsBtn">⌨️ /help</button>
         <button id="ttsBtn">🔊</button>
-        <button id="modelsBtn">📚 Модели</button>
+        <button id="templatesBtn">📋 Шаблоны</button>
+        <button id="resetBtn">🔄 Сброс</button>
     </div>
 
     <!-- НАСТРОЙКИ API -->
     <div class="api-settings" id="apiSettings">
-        <input type="password" id="apiKeyInput" placeholder="OpenRouter API ключ (sk-or-...)" />
+        <input type="password" id="apiKeyInput" placeholder="OpenRouter API ключ (бесплатно на openrouter.ai)" />
         <select id="modelSelect">
-            <option value="openai/gpt-3.5-turbo">GPT-3.5 Turbo</option>
-            <option value="openai/gpt-4-turbo">GPT-4 Turbo</option>
-            <option value="openai/gpt-4">GPT-4</option>
-            <option value="anthropic/claude-3-haiku">Claude 3 Haiku</option>
-            <option value="anthropic/claude-3-sonnet">Claude 3 Sonnet</option>
-            <option value="anthropic/claude-3-opus">Claude 3 Opus</option>
-            <option value="google/gemini-pro">Google Gemini Pro</option>
-            <option value="meta-llama/llama-3-70b-instruct">Llama 3 70B</option>
-            <option value="mistralai/mistral-7b-instruct">Mistral 7B</option>
-            <option value="microsoft/phi-3-mini">Phi-3 Mini</option>
-            <option value="cohere/command-r">Cohere Command R</option>
-            <option value="nousresearch/hermes-2-pro-llama-3">Hermes 2 Pro</option>
+            <!-- Бесплатные модели -->
+            <optgroup label="🆓 Бесплатные модели">
+                <option value="meta-llama/llama-3-8b-instruct:free">Llama 3 8B (бесплатно)</option>
+                <option value="mistralai/mistral-7b-instruct:free">Mistral 7B (бесплатно)</option>
+                <option value="microsoft/phi-3-mini-128k-instruct:free">Phi-3 Mini (бесплатно)</option>
+                <option value="google/gemini-flash-1.5">Gemini Flash (бесплатно)</option>
+                <option value="qwen/qwen-2.5-72b-instruct:free">Qwen 2.5 72B (бесплатно)</option>
+                <option value="nousresearch/hermes-2-pro-llama-3:free">Hermes 2 Pro (бесплатно)</option>
+            </optgroup>
+            <optgroup label="💎 Платные модели">
+                <option value="openai/gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                <option value="openai/gpt-4-turbo">GPT-4 Turbo</option>
+                <option value="openai/gpt-4">GPT-4</option>
+                <option value="anthropic/claude-3-haiku">Claude 3 Haiku</option>
+                <option value="anthropic/claude-3-sonnet">Claude 3 Sonnet</option>
+                <option value="anthropic/claude-3-opus">Claude 3 Opus</option>
+                <option value="google/gemini-pro">Google Gemini Pro</option>
+                <option value="meta-llama/llama-3-70b-instruct">Llama 3 70B</option>
+                <option value="mistralai/mistral-7b-instruct">Mistral 7B</option>
+                <option value="cohere/command-r">Cohere Command R</option>
+            </optgroup>
         </select>
         <button class="save-btn" id="saveApiBtn">💾 Сохранить</button>
         <button class="test-btn" id="testApiBtn">🔍 Тест</button>
         <span class="model-info" id="modelInfo">Выберите модель</span>
+        <div class="free-hint">💡 Бесплатные модели имеют ограничения по частоте запросов</div>
     </div>
 
     <!-- ЧАТ -->
@@ -710,7 +776,7 @@
 
     <!-- ВВОД -->
     <div class="input-area">
-        <input type="text" id="userInput" placeholder="Спроси Кото AI..." autocomplete="off" />
+        <input type="text" id="userInput" placeholder="Спроси Кото AI (бесплатно)..." autocomplete="off" />
         <div class="input-buttons">
             <button id="emojiBtn">😊</button>
             <button class="send-btn" id="sendBtn">⟶</button>
@@ -719,7 +785,7 @@
 
     <!-- ФУТЕР -->
     <div class="footer">
-        <span id="footerInfo">🐱 OpenRouter AI</span>
+        <span id="footerInfo">🐱 Бесплатный AI через OpenRouter</span>
         <div>
             <button id="autoClearBtn">⏱️ Автоочистка</button>
         </div>
@@ -734,7 +800,7 @@
 
 <script>
     // ================================================================
-    //  КОТО AI — OpenRouter (поддержка множества моделей)
+    //  КОТО AI — Бесплатный OpenRouter
     // ================================================================
 
     (function() {
@@ -763,8 +829,11 @@
         const saveApiBtn = document.getElementById('saveApiBtn');
         const testApiBtn = document.getElementById('testApiBtn');
         const apiStatus = document.getElementById('apiStatus');
+        const modelStatus = document.getElementById('modelStatus');
         const modelInfo = document.getElementById('modelInfo');
-        const modelsBtn = document.getElementById('modelsBtn');
+        const freeModelsBtn = document.getElementById('freeModelsBtn');
+        const templatesBtn = document.getElementById('templatesBtn');
+        const resetBtn = document.getElementById('resetBtn');
         const notification = document.getElementById('notification');
         const notifTitle = document.getElementById('notifTitle');
         const notifBody = document.getElementById('notifBody');
@@ -779,9 +848,8 @@
             theme: 'light',
             ttsEnabled: false,
             autoClear: false,
-            // OpenRouter
             apiKey: '',
-            model: 'openai/gpt-3.5-turbo',
+            model: 'meta-llama/llama-3-8b-instruct:free',
             isApiOnline: false,
             totalTokens: 0,
         };
@@ -789,26 +857,50 @@
         let allMessages = [];
         let isWaiting = false;
 
-        // --- Популярные модели с описанием ---
+        // --- Информация о моделях ---
         const modelInfoMap = {
-            'openai/gpt-3.5-turbo': '💨 Быстрая, дешёвая, умная',
-            'openai/gpt-4-turbo': '🔥 Мощная, актуальная, GPT-4',
-            'openai/gpt-4': '🏆 Классический GPT-4',
-            'anthropic/claude-3-haiku': '⚡ Быстрая, дешёвая, от Anthropic',
-            'anthropic/claude-3-sonnet': '🎯 Баланс скорость/качество',
-            'anthropic/claude-3-opus': '👑 Самая мощная от Anthropic',
-            'google/gemini-pro': '🌟 От Google, мультимодальная',
-            'meta-llama/llama-3-70b-instruct': '🦙 От Meta, открытая, мощная',
-            'mistralai/mistral-7b-instruct': '🌀 От Mistral, 7B параметров',
-            'microsoft/phi-3-mini': '📱 Маленькая, но умная',
-            'cohere/command-r': '📊 От Cohere, RAG-оптимизированная',
-            'nousresearch/hermes-2-pro-llama-3': '🧠 От Nous, тонкая настройка'
+            'meta-llama/llama-3-8b-instruct:free': '🆓 Llama 3 8B — быстрая, бесплатная',
+            'mistralai/mistral-7b-instruct:free': '🆓 Mistral 7B — отличная бесплатная',
+            'microsoft/phi-3-mini-128k-instruct:free': '🆓 Phi-3 Mini — компактная, бесплатная',
+            'google/gemini-flash-1.5': '🆓 Gemini Flash — от Google, бесплатно',
+            'qwen/qwen-2.5-72b-instruct:free': '🆓 Qwen 2.5 72B — мощная, бесплатная',
+            'nousresearch/hermes-2-pro-llama-3:free': '🆓 Hermes 2 Pro — бесплатная',
+            'openai/gpt-3.5-turbo': '💎 GPT-3.5 Turbo',
+            'openai/gpt-4-turbo': '💎 GPT-4 Turbo',
+            'openai/gpt-4': '💎 GPT-4',
+            'anthropic/claude-3-haiku': '💎 Claude 3 Haiku',
+            'anthropic/claude-3-sonnet': '💎 Claude 3 Sonnet',
+            'anthropic/claude-3-opus': '💎 Claude 3 Opus',
+            'google/gemini-pro': '💎 Gemini Pro',
+            'meta-llama/llama-3-70b-instruct': '💎 Llama 3 70B',
+            'mistralai/mistral-7b-instruct': '💎 Mistral 7B',
+            'cohere/command-r': '💎 Cohere Command R'
+        };
+
+        const freeModels = [
+            'meta-llama/llama-3-8b-instruct:free',
+            'mistralai/mistral-7b-instruct:free',
+            'microsoft/phi-3-mini-128k-instruct:free',
+            'google/gemini-flash-1.5',
+            'qwen/qwen-2.5-72b-instruct:free',
+            'nousresearch/hermes-2-pro-llama-3:free'
+        ];
+
+        // --- Шаблоны запросов ---
+        const templates = {
+            'Написать код': 'Напиши код на Python для...',
+            'Объяснить простым языком': 'Объясни простым языком, что такое...',
+            'Перевести': 'Переведи на русский: ...',
+            'Идеи для проекта': 'Предложи идеи для проекта по...',
+            'Резюме': 'Помоги написать резюме для...',
+            'Рецепт': 'Дай рецепт блюда...',
+            'Совет': 'Дай совет по...'
         };
 
         // --- Загрузка ---
         function loadState() {
             try {
-                const saved = localStorage.getItem('kotoAI_openrouter');
+                const saved = localStorage.getItem('kotoAI_free');
                 if (saved) {
                     const parsed = JSON.parse(saved);
                     Object.assign(state, parsed);
@@ -836,7 +928,7 @@
         function saveState() {
             try {
                 state.messages = allMessages;
-                localStorage.setItem('kotoAI_openrouter', JSON.stringify(state));
+                localStorage.setItem('kotoAI_free', JSON.stringify(state));
             } catch(e) { console.log('Save error', e); }
         }
 
@@ -844,7 +936,7 @@
         function renderHistory() {
             chatWindow.innerHTML = '';
             if (allMessages.length === 0) {
-                const welcome = "Привет! Я Кото AI 🐈. Я работаю через OpenRouter — доступ к десяткам моделей! Нажми ⚙️ API и введи ключ.";
+                const welcome = "Привет! Я Кото AI 🐈. Я работаю через OpenRouter с БЕСПЛАТНЫМИ моделями! Нажми ⚙️ API, введи ключ (бесплатный на openrouter.ai) и выбери модель с пометкой 🆓.";
                 allMessages.push({ sender: 'bot', text: welcome, timestamp: new Date().toLocaleTimeString() });
             }
 
@@ -871,7 +963,14 @@
             if (model && sender === 'bot') {
                 const tag = document.createElement('span');
                 tag.classList.add('model-tag');
-                tag.textContent = '🧠 ' + model.split('/').pop();
+                const isFree = freeModels.includes(model);
+                if (isFree) {
+                    const freeTag = document.createElement('span');
+                    freeTag.classList.add('free-tag');
+                    freeTag.textContent = '🆓';
+                    bubble.appendChild(freeTag);
+                }
+                tag.textContent = '🧠 ' + model.split('/').pop().replace(':free', '');
                 bubble.appendChild(tag);
             }
 
@@ -895,9 +994,14 @@
 
         function updateModelInfo(model) {
             const info = modelInfoMap[model] || '🧠 Модель';
-            modelInfo.textContent = '🧠 ' + info;
-            const shortName = model.split('/').pop();
-            document.querySelector('.badge').textContent = '🌐 ' + shortName;
+            modelInfo.textContent = info;
+            const isFree = freeModels.includes(model);
+            const shortName = model.split('/').pop().replace(':free', '');
+            document.querySelector('.badge').textContent = isFree ? '🆓 ' + shortName : '💎 ' + shortName;
+            
+            // Обновляем статус модели
+            modelStatus.textContent = isFree ? '🆓 Бесплатно' : '💎 Платная';
+            modelStatus.className = 'model-status ' + (isFree ? 'free' : 'paid');
         }
 
         // --- API статус ---
@@ -910,15 +1014,11 @@
         // --- OpenRouter запрос ---
         async function askOpenRouter(userMessage) {
             if (!state.apiKey) {
-                throw new Error('API ключ не установлен. Нажмите ⚙️ API и введите ключ.');
-            }
-
-            if (!state.isApiOnline) {
-                await testApiConnection();
+                throw new Error('API ключ не установлен. Получите бесплатный ключ на openrouter.ai');
             }
 
             const messages = [
-                { role: 'system', content: `Ты — ${state.name}, дружелюбный кото-помощник с характером. Отвечай кратко, но полезно. Используй эмодзи 🐱🐾. Твой режим: ${state.mode === 'smart' ? 'умный и информативный' : 'игривый и забавный'}.` },
+                { role: 'system', content: `Ты — ${state.name}, дружелюбный кото-помощник с характером. Отвечай кратко, но полезно. Используй эмодзи 🐱🐾. Твой режим: ${state.mode === 'smart' ? 'умный и информативный' : 'игривый и забавный'}. Ты используешь бесплатную модель.` },
                 ...allMessages.slice(-15).map(m => ({
                     role: m.sender === 'user' ? 'user' : 'assistant',
                     content: m.text
@@ -931,13 +1031,13 @@
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${state.apiKey}`,
                     'HTTP-Referer': window.location.origin,
-                    'X-Title': 'Кото AI'
+                    'X-Title': 'Кото AI Free'
                 },
                 body: JSON.stringify({
                     model: state.model,
                     messages: messages,
                     temperature: 0.8,
-                    max_tokens: 500,
+                    max_tokens: 600,
                     presence_penalty: 0.6,
                 })
             });
@@ -960,7 +1060,7 @@
         // --- Тест API ---
         async function testApiConnection() {
             if (!state.apiKey) {
-                showNotification('❌', 'Введите API ключ');
+                showNotification('❌', 'Введите API ключ (бесплатный на openrouter.ai)');
                 return false;
             }
 
@@ -971,7 +1071,7 @@
 
                 if (response.ok) {
                     updateApiStatus(true);
-                    showNotification('✅', 'OpenRouter подключен!');
+                    showNotification('✅', 'OpenRouter подключен! Используйте бесплатные модели.');
                     return true;
                 } else {
                     updateApiStatus(false);
@@ -1004,7 +1104,7 @@
             sendBtn.disabled = true;
 
             typingIndicator.style.display = 'flex';
-            typingText.textContent = 'Кото думает... (OpenRouter)';
+            typingText.textContent = 'Кото думает... (бесплатно)';
             chatWindow.scrollTop = chatWindow.scrollHeight;
 
             try {
@@ -1020,7 +1120,7 @@
                 } else {
                     reply = getLocalReply(text);
                     model = 'local';
-                    showNotification('⚠️', 'Использую локальные ответы (API не подключён)');
+                    showNotification('⚠️', 'Использую локальные ответы. Настройте API для AI.');
                 }
 
                 typingIndicator.style.display = 'none';
@@ -1035,7 +1135,7 @@
             } catch (error) {
                 typingIndicator.style.display = 'none';
                 showNotification('❌', 'Ошибка: ' + error.message);
-                addMessage('😺 Извини, проблемы с API. Попробуй ещё раз!', 'bot');
+                addMessage('😺 Извини, проблемы с API. Проверь ключ или выбери бесплатную модель.', 'bot');
             }
 
             isWaiting = false;
@@ -1060,7 +1160,7 @@
         // --- Локальные ответы (fallback) ---
         function getLocalReply(text) {
             const lower = text.toLowerCase();
-            if (lower.includes('привет')) return 'Мур-привет! 🐾';
+            if (lower.includes('привет')) return 'Мур-привет! 🐾 Бесплатный AI готов!';
             if (lower.includes('как дела')) return 'Мурлыкаю отлично! 😺';
             if (lower.includes('погода')) return '🌤️ Коты любят солнце!';
             if (lower.includes('имя')) return `Меня зовут ${state.name}! 🐈`;
@@ -1068,7 +1168,10 @@
             if (lower.includes('расскажи') || lower.includes('анекдот')) {
                 return 'Почему коты не любят ПК? Боятся мышей! 🐭';
             }
-            return 'Интересно... Расскажи ещё! (OpenRouter пока не подключён) 🐱';
+            if (lower.includes('бесплатно')) {
+                return 'Да! Я использую бесплатные модели через OpenRouter. Попробуй Llama 3, Mistral или Gemini Flash! 🆓';
+            }
+            return 'Интересно... Настрой API с бесплатным ключом для умных ответов! 🐱';
         }
 
         // --- Команды ---
@@ -1076,18 +1179,20 @@
             const base = cmd.split(' ')[0].toLowerCase();
             switch(base) {
                 case '/help':
-                    return `📋 Команды Кото AI:\n/help - помощь\n/clear - очистить\n/joke - шутка\n/models - список моделей\n/stats - статистика\n/model - текущая модель`;
+                    return `📋 Команды Кото AI:\n/help - помощь\n/clear - очистить\n/joke - шутка\n/models - список моделей\n/stats - статистика\n/free - бесплатные модели\n/templates - шаблоны`;
                 case '/clear':
                     clearChat();
                     return '🧹 Чат очищен!';
                 case '/joke':
                     return 'Почему коты не любят ПК? Боятся мышей! 🐭';
                 case '/models':
-                    return '📚 Доступные модели: GPT-4, Claude 3, Gemini, Llama 3, Mistral, Phi-3 и др. Настрой в ⚙️ API';
+                    return '📚 Бесплатные модели: Llama 3 8B, Mistral 7B, Phi-3 Mini, Gemini Flash, Qwen 2.5, Hermes 2 Pro';
                 case '/stats':
-                    return `📊 Сообщений: ${allMessages.length}\nМодель: ${state.model}\nТокенов: ${state.totalTokens}\nAPI: ${state.isApiOnline ? '✅' : '❌'}`;
-                case '/model':
-                    return `🧠 Модель: ${state.model} ${state.isApiOnline ? '✅' : '❌'}`;
+                    return `📊 Сообщений: ${allMessages.length}\nМодель: ${state.model}\nТокенов: ${state.totalTokens}\nAPI: ${state.isApiOnline ? '✅' : '❌'}\nБесплатно: ${freeModels.includes(state.model) ? '✅' : '❌'}`;
+                case '/free':
+                    return '🆓 Бесплатные модели: Llama 3 8B, Mistral 7B, Phi-3 Mini, Gemini Flash, Qwen 2.5, Hermes 2 Pro. Выбери в настройках API!';
+                case '/templates':
+                    return '📋 Шаблоны: ' + Object.keys(templates).join(', ');
                 default:
                     return '❓ Неизвестная команда. /help';
             }
@@ -1099,6 +1204,15 @@
             renderHistory();
             saveState();
             showNotification('🧹', 'Чат очищен');
+        }
+
+        // --- Сброс диалога ---
+        function resetChat() {
+            allMessages = [];
+            state.totalTokens = 0;
+            renderHistory();
+            saveState();
+            showNotification('🔄', 'Диалог сброшен');
         }
 
         // --- TTS ---
@@ -1119,7 +1233,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `koto_openrouter_${new Date().toISOString().slice(0,10)}.txt`;
+            a.download = `koto_free_${new Date().toISOString().slice(0,10)}.txt`;
             a.click();
             URL.revokeObjectURL(url);
             showNotification('📥', 'Чат экспортирован!');
@@ -1168,7 +1282,7 @@
             const hasState = loadState();
 
             if (!hasState || allMessages.length === 0) {
-                const welcome = "Привет! Я Кото AI 🐈. Я работаю через OpenRouter — доступ к десяткам моделей AI! Нажми ⚙️ API и введи ключ, чтобы включить умные ответы.";
+                const welcome = "Привет! Я Кото AI 🐈. Я работаю через OpenRouter с БЕСПЛАТНЫМИ моделями!\n\n🔑 Получи бесплатный ключ на openrouter.ai\n🆓 Выбери модель с пометкой 🆓\n💬 Начни общение!";
                 allMessages = [{ sender: 'bot', text: welcome, timestamp: new Date().toLocaleTimeString() }];
                 renderHistory();
             }
@@ -1187,6 +1301,7 @@
 
             clearBtn.addEventListener('click', clearChat);
             exportBtn.addEventListener('click', exportChat);
+            resetBtn.addEventListener('click', resetChat);
 
             ttsBtn.addEventListener('click', () => {
                 state.ttsEnabled = !state.ttsEnabled;
@@ -1229,6 +1344,31 @@
                 handleSend();
             });
 
+            // Бесплатные модели
+            freeModelsBtn.addEventListener('click', () => {
+                const freeList = freeModels.map(m => '• ' + m.split('/').pop().replace(':free', '')).join('\n');
+                showNotification('🆓', 'Бесплатные модели:\n' + freeList);
+                // Автоматически выбираем первую бесплатную модель
+                if (freeModels.length > 0) {
+                    modelSelect.value = freeModels[0];
+                    state.model = freeModels[0];
+                    updateModelInfo(state.model);
+                    saveState();
+                }
+            });
+
+            // Шаблоны
+            templatesBtn.addEventListener('click', () => {
+                const templateList = Object.entries(templates)
+                    .map(([key, value]) => `• ${key}: ${value}`)
+                    .join('\n');
+                showNotification('📋', 'Шаблоны запросов:\n' + templateList);
+                // Вставляем первый шаблон
+                const firstTemplate = Object.values(templates)[0];
+                userInput.value = firstTemplate;
+                userInput.focus();
+            });
+
             // API настройки
             apiBtn.addEventListener('click', () => {
                 apiSettings.classList.toggle('show');
@@ -1244,7 +1384,7 @@
                     showNotification('💾', 'API ключ сохранён!');
                     testApiConnection();
                 } else {
-                    showNotification('⚠️', 'Введите API ключ');
+                    showNotification('⚠️', 'Введите API ключ с openrouter.ai');
                 }
             });
 
@@ -1254,11 +1394,8 @@
                 state.model = modelSelect.value;
                 updateModelInfo(state.model);
                 saveState();
-            });
-
-            modelsBtn.addEventListener('click', () => {
-                const models = Object.keys(modelInfoMap).join('\n');
-                showNotification('📚', 'Модели:\n' + models.slice(0, 60) + '...');
+                const isFree = freeModels.includes(state.model);
+                showNotification('🧠', isFree ? 'Выбрана бесплатная модель!' : 'Выбрана платная модель');
             });
 
             // Эмоции
@@ -1275,10 +1412,11 @@
 
             window.addEventListener('beforeunload', saveState);
 
-            console.log('🐈 Кото AI с OpenRouter загружен!');
+            console.log('🐈 Кото AI с бесплатным OpenRouter загружен!');
             console.log(`📊 Сообщений: ${allMessages.length}`);
             console.log(`🔑 API: ${state.apiKey ? '✅ установлен' : '❌ не установлен'}`);
-            console.log(`🧠 Модель: ${state.model}`);
+            console.log(`🧠 Модель: ${state.model} ${freeModels.includes(state.model) ? '🆓' : '💎'}`);
+            console.log('💡 Получите бесплатный ключ на openrouter.ai');
         }
 
         init();
